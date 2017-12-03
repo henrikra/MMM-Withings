@@ -19,6 +19,10 @@ const generateQuery = (params) =>
     .map(([key, value]) => key + '=' + value)
     .join('&');
 
+const measureTypes = {
+  weight: 1,
+};
+
 const createApiUrl = () => {
   const timestamp = Math.round(Date.now() / 1000);
   const nonce = randomString(32);
@@ -32,15 +36,17 @@ const createApiUrl = () => {
     oauth_token: env.accessToken,
     oauth_version: '1.0',
     userid: env.userId,
+    meastype: measureTypes.weight,
+    limit: 1,
   });
-  console.log(queryParams);
   return `http://api.health.nokia.com/measure?${queryParams}`;
 }
 
 module.exports = NodeHelper.create({
   start: function() {
     agent.get(createApiUrl(), undefined, (error, response, body) => {
-      console.log(body);
+      const latestMeasure = body.body.measuregrps[0].measures.find(measure => measure.type === 1);
+      console.log('latest weight', latestMeasure.value * Math.pow(10, latestMeasure.unit))
     });
   },
 });
