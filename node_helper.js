@@ -48,7 +48,7 @@ module.exports = NodeHelper.create({
       this.checkLatestWeight();
       setInterval(() => {
         this.checkLatestWeight();
-      }, 60000);
+      }, 30000);
     }
   },
   
