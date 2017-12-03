@@ -54,7 +54,8 @@ module.exports = NodeHelper.create({
   
   checkLatestWeight: function() {
     agent.get(createApiUrl(), undefined, (error, response, body) => {
-      const latestMeasure = body.body.measuregrps[0].measures.find(measure => measure.type === 1);
+      const latestMeasure = body.body.measuregrps[0].measures
+        .find(measure => measure.type === measureTypes.weight);
       this.sendSocketNotification(
         'NEW_WEIGHT', 
         { 
