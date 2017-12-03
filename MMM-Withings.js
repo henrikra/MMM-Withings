@@ -21,6 +21,7 @@ Module.register('MMM-Withings', {
   getDom: function() {
     const wrapper = document.createElement('div');
     wrapper.innerHTML = this.state.weight ? this.formatWeight() : 'lol';
+    wrapper.classList.add('medium');
     return wrapper;
   }
 });
