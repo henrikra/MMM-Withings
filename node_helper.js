@@ -43,10 +43,13 @@ const createApiUrl = () => {
 }
 
 module.exports = NodeHelper.create({
-  start: function() {
+  socketNotificationReceived: function() {
     agent.get(createApiUrl(), undefined, (error, response, body) => {
       const latestMeasure = body.body.measuregrps[0].measures.find(measure => measure.type === 1);
-      console.log('latest weight', latestMeasure.value * Math.pow(10, latestMeasure.unit))
+      this.sendSocketNotification(
+        'NEW_WEIGHT', 
+        { weight: latestMeasure.value * Math.pow(10, latestMeasure.unit) }
+      );
     });
-  },
+  }
 });
