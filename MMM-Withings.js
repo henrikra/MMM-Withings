@@ -1,4 +1,6 @@
 /* eslint-disable */
+const capitalizeFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
 Module.register('MMM-Withings', {
   start: function() {
     this.state = {};
@@ -34,7 +36,9 @@ Module.register('MMM-Withings', {
     const upperText = document.createElement('div');
     const lowerText = document.createElement('div');
     upperText.classList.add('small');
-    upperText.innerHTML = this.state.weight ? this.translate('agoYouWere', {agoTime: moment(this.state.date * 1000).fromNow()}) : '';
+    upperText.innerHTML = this.state.weight 
+      ? this.translate('agoYouWere', {agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow())}) 
+      : '';
     lowerText.classList.add('medium');
     lowerText.innerHTML = this.state.weight ? this.formatWeight() : this.translate('loading');
     wrapper.appendChild(upperText);
