@@ -15,8 +15,8 @@ const randomString = (length) => {
 }
 
 const generateQuery = (params) => 
-  Object.entries(params)
-    .map(([key, value]) => key + '=' + value)
+  Object.keys(params)
+    .map((key) => key + '=' + params[key])
     .join('&');
 
 const measureTypes = {
