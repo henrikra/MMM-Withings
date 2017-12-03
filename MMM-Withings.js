@@ -11,7 +11,7 @@ Module.register('MMM-Withings', {
   },
 
   socketNotificationReceived: function(notification, payload) {
-    this.setState({ weight: payload.weight });
+    this.setState({ weight: payload.weight }, 1000);
   },
 
   formatWeight: function() {
@@ -20,7 +20,7 @@ Module.register('MMM-Withings', {
 
   getDom: function() {
     const wrapper = document.createElement('div');
-    wrapper.innerHTML = this.state.weight ? this.formatWeight() : 'lol';
+    wrapper.innerHTML = this.state.weight ? this.formatWeight() : 'Loading...';
     wrapper.classList.add('medium');
     return wrapper;
   }
