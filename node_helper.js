@@ -14,10 +14,27 @@ const randomString = (length) => {
   return text;
 }
 
+const generateQuery = (params) => 
+  Object.entries(params)
+    .map(([key, value]) => key + '=' + value)
+    .join('&');
+
 const createApiUrl = () => {
   const timestamp = Math.round(Date.now() / 1000);
   const nonce = randomString(32);
-  return `http://api.health.nokia.com/measure?action=getmeas&oauth_consumer_key=${env.apiKey}&oauth_nonce=${nonce}&oauth_signature=${env.oauthSignature}&oauth_signature_method=HMAC-SHA1&oauth_timestamp=${timestamp}&oauth_token=${env.accessToken}&oauth_version=1.0&userid=${env.userId}`;
+  const queryParams = generateQuery({
+    action: 'getmeas',
+    oauth_consumer_key: env.apiKey,
+    oauth_nonce: nonce,
+    oauth_signature: env.oauthSignature,
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp: timestamp,
+    oauth_token: env.accessToken,
+    oauth_version: '1.0',
+    userid: env.userId,
+  });
+  console.log(queryParams);
+  return `http://api.health.nokia.com/measure?${queryParams}`;
 }
 
 module.exports = NodeHelper.create({
