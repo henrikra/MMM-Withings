@@ -57,7 +57,10 @@ module.exports = NodeHelper.create({
       const latestMeasure = body.body.measuregrps[0].measures.find(measure => measure.type === 1);
       this.sendSocketNotification(
         'NEW_WEIGHT', 
-        { weight: latestMeasure.value * Math.pow(10, latestMeasure.unit) }
+        { 
+          weight: latestMeasure.value * Math.pow(10, latestMeasure.unit),
+          date: body.body.measuregrps[0].date,
+        }
       );
     });
   }
