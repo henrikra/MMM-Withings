@@ -43,7 +43,16 @@ const createApiUrl = () => {
 }
 
 module.exports = NodeHelper.create({
-  socketNotificationReceived: function() {
+  socketNotificationReceived: function(notification) {
+    if (notification === 'MMM_WITHINGS_START') {
+      this.checkLatestWeight();
+      setInterval(() => {
+        this.checkLatestWeight();
+      }, 60000);
+    }
+  },
+  
+  checkLatestWeight: function() {
     agent.get(createApiUrl(), undefined, (error, response, body) => {
       const latestMeasure = body.body.measuregrps[0].measures.find(measure => measure.type === 1);
       this.sendSocketNotification(
