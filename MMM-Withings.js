@@ -24,11 +24,15 @@ Module.register('MMM-Withings', {
   },
 
   socketNotificationReceived: function(notification, payload) {
-    this.setState({ weight: payload.weight, date: payload.date }, 1000);
+    this.setState({
+      weight: payload.weight,
+      date: payload.date,
+      weightDifference: payload.weightDifference,
+    }, 1000);
   },
 
   formatWeight: function() {
-    return `${this.state.weight.toFixed(1)} kg`;
+    return `${this.state.weight.toFixed(1)} kg (${this.state.weightDifference.toFixed(1)})`;
   },
 
   getDom: function() {

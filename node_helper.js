@@ -37,10 +37,12 @@ const createApiUrl = () => {
     oauth_version: '1.0',
     userid: env.userId,
     meastype: measureTypes.weight,
-    limit: 1,
+    limit: 2,
   });
   return `http://api.health.nokia.com/measure?${queryParams}`;
 }
+
+const isWeightType = measure => measure.type === measureTypes.weight;
 
 module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification) {
@@ -54,13 +56,18 @@ module.exports = NodeHelper.create({
   
   checkLatestWeight: function() {
     agent.get(createApiUrl(), undefined, (error, response, body) => {
-      const latestMeasure = body.body.measuregrps[0].measures
-        .find(measure => measure.type === measureTypes.weight);
+      const latestMeasure = body.body.measuregrps[0].measures.find(isWeightType);
+      const latestWeight = latestMeasure.value * Math.pow(10, latestMeasure.unit);
+      const secondLatestMeasure = body.body.measuregrps[1].measures.find(isWeightType);
+      const secondLatestWeight = secondLatestMeasure.value * Math.pow(10, secondLatestMeasure.unit);
+      const weightDifference = latestWeight - secondLatestWeight;
+
       this.sendSocketNotification(
         'NEW_WEIGHT', 
         { 
           weight: latestMeasure.value * Math.pow(10, latestMeasure.unit),
           date: body.body.measuregrps[0].date,
+          weightDifference,
         }
       );
     });
