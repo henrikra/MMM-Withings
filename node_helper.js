@@ -65,7 +65,7 @@ module.exports = NodeHelper.create({
       this.sendSocketNotification(
         'NEW_WEIGHT', 
         { 
-          weight: latestMeasure.value * Math.pow(10, latestMeasure.unit),
+          weight: latestWeight,
           date: body.body.measuregrps[0].date,
           weightDifference,
         }
