@@ -32,7 +32,11 @@ Module.register('MMM-Withings', {
   },
 
   formatWeight: function() {
-    return `${this.state.weight.toFixed(1)} kg (${this.state.weightDifference.toFixed(1)})`;
+    return `${this.state.weight.toFixed(1)} kg (${
+      this.state.weightDifference > 0
+        ? `+${this.state.weightDifference.toFixed(1)}`
+        : this.state.weightDifference.toFixed(1)
+    })`;
   },
 
   getDom: function() {
