@@ -43,22 +43,26 @@ Module.register('MMM-Withings', {
   drawGraph: function(canvas, hasWeight) {
     if (hasWeight) {
       const ctx = canvas.getContext('2d');
-      const graphValues = [77.1, 79.4, 81.0, 77.8, 78.1];
+      const graphValues = [77.1, 79.4, 81.0, 77.8, 78.1, 77.7, 77.9];
       const minValue = Math.min(...graphValues);
       const maxValue = Math.max(...graphValues);
       ctx.fillStyle = '#ffffff';
       ctx.strokeStyle = '#ffffff';
       graphValues.forEach((graphValue, index, allGraphValues) => {
-        const x = index * 30;
-        const y = this.canvasHeight - this.canvasHeight * (graphValue - minValue) / (maxValue - minValue)
+        const circleRadius = 2;
+        const offSetYFromEdges = circleRadius * 3;
+        const offSetXFromEdges = offSetYFromEdges / 2;
+        
+        const x = index * 30 + offSetXFromEdges;
+        const y = this.canvasHeight - (this.canvasHeight - offSetYFromEdges) * (graphValue - minValue) / (maxValue - minValue) - offSetXFromEdges
         ctx.beginPath();
-        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
         ctx.fill();
 
         ctx.beginPath();
         ctx.moveTo(x, y);
-        const secondX = (index + 1) * 30;
-        const secondY = this.canvasHeight - this.canvasHeight * (allGraphValues[index + 1] - minValue) / (maxValue - minValue)
+        const secondX = (index + 1) * 30 + offSetXFromEdges;
+        const secondY = this.canvasHeight - (this.canvasHeight - offSetYFromEdges) * (allGraphValues[index + 1] - minValue) / (maxValue - minValue) - offSetXFromEdges
         ctx.lineTo(secondX, secondY);
         ctx.stroke();
       });
