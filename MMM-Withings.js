@@ -39,18 +39,37 @@ Module.register('MMM-Withings', {
     })`;
   },
 
+  drawGraph: function(canvas, hasWeight) {
+    if (canvas && hasWeight) {
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'red';
+      ctx.fillRect(0, 0, 100, 100);
+    }
+  },
+
   getDom: function() {
     const wrapper = document.createElement('div');
     const upperText = document.createElement('div');
     const lowerText = document.createElement('div');
+    const canvas = document.createElement('canvas');
+
+    
     upperText.classList.add('small');
     upperText.innerHTML = this.state.weight 
-      ? this.translate('agoYouWere', {agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow())}) 
-      : '';
+    ? this.translate('agoYouWere', {agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow())}) 
+    : '';
     lowerText.classList.add('medium');
     lowerText.innerHTML = this.state.weight ? this.formatWeight() : this.translate('loading');
+    canvas.setAttribute('id', 'graph');
+    canvas.setAttribute('width', '300');
+    canvas.setAttribute('height', '200');
+    
     wrapper.appendChild(upperText);
     wrapper.appendChild(lowerText);
+    wrapper.appendChild(canvas);
+    
+    this.drawGraph(canvas, !!this.state.weight);
+    
     return wrapper;
   }
 });
