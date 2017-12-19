@@ -1,6 +1,8 @@
 /* eslint-disable */
 const capitalizeFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
+const canvasWidth = 300;
+
 Module.register('MMM-Withings', {
   start: function() {
     this.state = {};
@@ -66,6 +68,8 @@ Module.register('MMM-Withings', {
         ctx.lineTo(secondX, secondY);
         ctx.stroke();
       });
+      ctx.font = '24px "Roboto Condensed"';
+      ctx.fillText('+ 0.5', graphValues.length * 30, this.canvasHeight / 2);
     }
   },
 
@@ -82,9 +86,8 @@ Module.register('MMM-Withings', {
     lowerText.classList.add('medium');
     lowerText.innerHTML = this.state.weight ? this.formatWeight() : this.translate('loading');
     canvas.setAttribute('id', 'graph');
-    canvas.setAttribute('width', '300');
+    canvas.setAttribute('width', canvasWidth);
     canvas.setAttribute('height', this.canvasHeight);
-    canvas.setAttribute('style', 'border: 1px solid #ffffff')
     
     wrapper.appendChild(upperText);
     wrapper.appendChild(lowerText);
