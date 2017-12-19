@@ -44,8 +44,8 @@ Module.register('MMM-Withings', {
       const graphValues = [...this.state.weights].reverse();
       const minValue = Math.min(...graphValues);
       const maxValue = Math.max(...graphValues);
-      ctx.fillStyle = '#ffffff';
-      ctx.strokeStyle = '#ffffff';
+      ctx.fillStyle = '#aaaaaa';
+      ctx.strokeStyle = '#aaaaaa';
       graphValues.forEach((graphValue, index, allGraphValues) => {
         const circleRadius = 2;
         const offSetYFromEdges = circleRadius * 3;
