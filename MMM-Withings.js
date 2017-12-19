@@ -34,17 +34,14 @@ Module.register('MMM-Withings', {
   },
 
   formatWeight: function() {
-    const [latestWeight, secondLatestWeight] = this.state.weights;
-    const weightDifference = latestWeight - secondLatestWeight;
-    return `${latestWeight.toFixed(1)} kg (${
-      weightDifference > 0 ? `+${weightDifference.toFixed(1)}` : weightDifference.toFixed(1)
-    })`;
+    const [latestWeight] = this.state.weights;
+    return `${latestWeight.toFixed(1)} kg`;
   },
 
   drawGraph: function(canvas) {
     if (this.state.weights) {
       const ctx = canvas.getContext('2d');
-      const graphValues = this.state.weights.reverse();
+      const graphValues = [...this.state.weights].reverse();
       const minValue = Math.min(...graphValues);
       const maxValue = Math.max(...graphValues);
       ctx.fillStyle = '#ffffff';
@@ -68,7 +65,13 @@ Module.register('MMM-Withings', {
         ctx.stroke();
       });
       ctx.font = '300 24px "Roboto Condensed"';
-      ctx.fillText('+ 0.5', graphValues.length * 30, canvasHeight / 2);
+      const [latestWeight, secondLatestWeight] = this.state.weights;
+      const weightDifference = latestWeight - secondLatestWeight;
+      ctx.fillText(
+        `${weightDifference > 0 ? '+' : '-'} ${Math.abs(weightDifference).toFixed(1)}`, 
+        graphValues.length * 30, 
+        canvasHeight / 2
+      );
     }
   },
 
