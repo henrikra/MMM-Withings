@@ -46,11 +46,20 @@ Module.register('MMM-Withings', {
       const minValue = Math.min(...graphValues);
       const maxValue = Math.max(...graphValues);
       ctx.fillStyle = '#ffffff';
-      graphValues.forEach((graphValue, index) => {
+      ctx.strokeStyle = '#ffffff';
+      graphValues.forEach((graphValue, index, allGraphValues) => {
+        const x = index * 30;
+        const y = 100 * (graphValue - minValue) / (maxValue - minValue)
         ctx.beginPath();
-        const result = 100 * (graphValue - minValue) / (maxValue - minValue);
-        ctx.arc(index * 30, result, 3, 0, 2 * Math.PI);
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
         ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        const secondX = (index + 1) * 30;
+        const secondY = 100 * (allGraphValues[index + 1] - minValue) / (maxValue - minValue)
+        ctx.lineTo(secondX, secondY);
+        ctx.stroke();
       });
     }
   },
