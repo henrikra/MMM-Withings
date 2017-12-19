@@ -43,10 +43,13 @@ Module.register('MMM-Withings', {
     if (hasWeight) {
       const ctx = canvas.getContext('2d');
       const graphValues = [77.1, 79.4, 81.0, 77.8, 78.1];
+      const minValue = Math.min(...graphValues);
+      const maxValue = Math.max(...graphValues);
       ctx.fillStyle = '#ffffff';
       graphValues.forEach((graphValue, index) => {
         ctx.beginPath();
-        ctx.arc(index * 30, graphValue, 3, 0, 2 * Math.PI);
+        const result = 100 * (graphValue - minValue) / (maxValue - minValue);
+        ctx.arc(index * 30, result, 3, 0, 2 * Math.PI);
         ctx.fill();
       });
     }
