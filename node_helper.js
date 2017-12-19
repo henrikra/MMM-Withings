@@ -59,23 +59,16 @@ module.exports = NodeHelper.create({
       if (error) {
         return;
       }
-      const result = body.body.measuregrps.map(measuregrp => {
+      const weights = body.body.measuregrps.map(measuregrp => {
         const measure = measuregrp.measures.find(isWeightType);
         return measure.value * Math.pow(10, measure.unit);
       });
-      const latestMeasure = body.body.measuregrps[0].measures.find(isWeightType);
-      const latestWeight = latestMeasure.value * Math.pow(10, latestMeasure.unit);
-      const secondLatestMeasure = body.body.measuregrps[1].measures.find(isWeightType);
-      const secondLatestWeight = secondLatestMeasure.value * Math.pow(10, secondLatestMeasure.unit);
-      const weightDifference = latestWeight - secondLatestWeight;
 
       this.sendSocketNotification(
         'NEW_WEIGHT', 
         { 
-          weight: latestWeight,
           date: body.body.measuregrps[0].date,
-          weightDifference,
-          weights: result
+          weights,
         }
       );
     });

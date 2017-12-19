@@ -28,18 +28,16 @@ Module.register('MMM-Withings', {
 
   socketNotificationReceived: function(notification, payload) {
     this.setState({
-      weight: payload.weight,
       date: payload.date,
-      weightDifference: payload.weightDifference,
       weights: payload.weights,
     }, 1000);
   },
 
   formatWeight: function() {
-    return `${this.state.weight.toFixed(1)} kg (${
-      this.state.weightDifference > 0
-        ? `+${this.state.weightDifference.toFixed(1)}`
-        : this.state.weightDifference.toFixed(1)
+    const [latestWeight, secondLatestWeight] = this.state.weights;
+    const weightDifference = latestWeight - secondLatestWeight;
+    return `${latestWeight.toFixed(1)} kg (${
+      weightDifference > 0 ? `+${weightDifference.toFixed(1)}` : weightDifference.toFixed(1)
     })`;
   },
 
@@ -81,11 +79,11 @@ Module.register('MMM-Withings', {
     const canvas = document.createElement('canvas');
     
     upperText.classList.add('small');
-    upperText.innerHTML = this.state.weight 
+    upperText.innerHTML = this.state.date 
     ? this.translate('agoYouWere', {agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow())}) 
     : '';
     lowerText.classList.add('medium');
-    lowerText.innerHTML = this.state.weight ? this.formatWeight() : this.translate('loading');
+    lowerText.innerHTML = this.state.weights ? this.formatWeight() : this.translate('loading');
     canvas.setAttribute('id', 'graph');
     canvas.setAttribute('width', canvasWidth);
     canvas.setAttribute('height', this.canvasHeight);
@@ -94,7 +92,7 @@ Module.register('MMM-Withings', {
     wrapper.appendChild(lowerText);
     wrapper.appendChild(canvas);
     
-    this.drawGraph(canvas, !!this.state.weight);
+    this.drawGraph(canvas);
     
     return wrapper;
   }
