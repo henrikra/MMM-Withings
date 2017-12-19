@@ -31,6 +31,7 @@ Module.register('MMM-Withings', {
       weight: payload.weight,
       date: payload.date,
       weightDifference: payload.weightDifference,
+      weights: payload.weights,
     }, 1000);
   },
 
@@ -42,10 +43,10 @@ Module.register('MMM-Withings', {
     })`;
   },
 
-  drawGraph: function(canvas, hasWeight) {
-    if (hasWeight) {
+  drawGraph: function(canvas) {
+    if (this.state.weights) {
       const ctx = canvas.getContext('2d');
-      const graphValues = [77.1, 79.4, 81.0, 77.8, 78.1, 77.7, 77.9];
+      const graphValues = this.state.weights.reverse();
       const minValue = Math.min(...graphValues);
       const maxValue = Math.max(...graphValues);
       ctx.fillStyle = '#ffffff';
@@ -68,7 +69,7 @@ Module.register('MMM-Withings', {
         ctx.lineTo(secondX, secondY);
         ctx.stroke();
       });
-      ctx.font = '24px "Roboto Condensed"';
+      ctx.font = '300 24px "Roboto Condensed"';
       ctx.fillText('+ 0.5', graphValues.length * 30, this.canvasHeight / 2);
     }
   },
