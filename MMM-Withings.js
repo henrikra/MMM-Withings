@@ -2,11 +2,11 @@
 const capitalizeFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
 
 const canvasWidth = 300;
+const canvasHeight = 100;
 
 Module.register('MMM-Withings', {
   start: function() {
     this.state = {};
-    this.canvasHeight = 100;
     this.sendSocketNotification('MMM_WITHINGS_START');
   },
 
@@ -55,7 +55,7 @@ Module.register('MMM-Withings', {
         const offSetXFromEdges = offSetYFromEdges / 2;
         
         const x = index * 30 + offSetXFromEdges;
-        const y = this.canvasHeight - (this.canvasHeight - offSetYFromEdges) * (graphValue - minValue) / (maxValue - minValue) - offSetXFromEdges
+        const y = canvasHeight - (canvasHeight - offSetYFromEdges) * (graphValue - minValue) / (maxValue - minValue) - offSetXFromEdges
         ctx.beginPath();
         ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
         ctx.fill();
@@ -63,12 +63,12 @@ Module.register('MMM-Withings', {
         ctx.beginPath();
         ctx.moveTo(x, y);
         const secondX = (index + 1) * 30 + offSetXFromEdges;
-        const secondY = this.canvasHeight - (this.canvasHeight - offSetYFromEdges) * (allGraphValues[index + 1] - minValue) / (maxValue - minValue) - offSetXFromEdges
+        const secondY = canvasHeight - (canvasHeight - offSetYFromEdges) * (allGraphValues[index + 1] - minValue) / (maxValue - minValue) - offSetXFromEdges
         ctx.lineTo(secondX, secondY);
         ctx.stroke();
       });
       ctx.font = '300 24px "Roboto Condensed"';
-      ctx.fillText('+ 0.5', graphValues.length * 30, this.canvasHeight / 2);
+      ctx.fillText('+ 0.5', graphValues.length * 30, canvasHeight / 2);
     }
   },
 
@@ -86,7 +86,7 @@ Module.register('MMM-Withings', {
     lowerText.innerHTML = this.state.weights ? this.formatWeight() : this.translate('loading');
     canvas.setAttribute('id', 'graph');
     canvas.setAttribute('width', canvasWidth);
-    canvas.setAttribute('height', this.canvasHeight);
+    canvas.setAttribute('height', canvasHeight);
     
     wrapper.appendChild(upperText);
     wrapper.appendChild(lowerText);
