@@ -4,6 +4,7 @@ const capitalizeFirst = (string) => string.charAt(0).toUpperCase() + string.slic
 Module.register('MMM-Withings', {
   start: function() {
     this.state = {};
+    this.canvasHeight = 100;
     this.sendSocketNotification('MMM_WITHINGS_START');
   },
 
@@ -49,7 +50,7 @@ Module.register('MMM-Withings', {
       ctx.strokeStyle = '#ffffff';
       graphValues.forEach((graphValue, index, allGraphValues) => {
         const x = index * 30;
-        const y = 100 * (graphValue - minValue) / (maxValue - minValue)
+        const y = this.canvasHeight - this.canvasHeight * (graphValue - minValue) / (maxValue - minValue)
         ctx.beginPath();
         ctx.arc(x, y, 3, 0, 2 * Math.PI);
         ctx.fill();
@@ -57,7 +58,7 @@ Module.register('MMM-Withings', {
         ctx.beginPath();
         ctx.moveTo(x, y);
         const secondX = (index + 1) * 30;
-        const secondY = 100 * (allGraphValues[index + 1] - minValue) / (maxValue - minValue)
+        const secondY = this.canvasHeight - this.canvasHeight * (allGraphValues[index + 1] - minValue) / (maxValue - minValue)
         ctx.lineTo(secondX, secondY);
         ctx.stroke();
       });
@@ -78,7 +79,7 @@ Module.register('MMM-Withings', {
     lowerText.innerHTML = this.state.weight ? this.formatWeight() : this.translate('loading');
     canvas.setAttribute('id', 'graph');
     canvas.setAttribute('width', '300');
-    canvas.setAttribute('height', '200');
+    canvas.setAttribute('height', this.canvasHeight);
     canvas.setAttribute('style', 'border: 1px solid #ffffff')
     
     wrapper.appendChild(upperText);
