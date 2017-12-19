@@ -46,12 +46,13 @@ Module.register('MMM-Withings', {
       const maxValue = Math.max(...graphValues);
       ctx.fillStyle = '#aaaaaa';
       ctx.strokeStyle = '#aaaaaa';
+      const spaceBetweenX = 30;
       graphValues.forEach((graphValue, index, allGraphValues) => {
         const circleRadius = 2;
         const offSetYFromEdges = circleRadius * 3;
         const offSetXFromEdges = offSetYFromEdges / 2;
         
-        const x = index * 30 + offSetXFromEdges;
+        const x = index * spaceBetweenX + offSetXFromEdges;
         const y = canvasHeight - (canvasHeight - offSetYFromEdges) * (graphValue - minValue) / (maxValue - minValue) - offSetXFromEdges
         ctx.beginPath();
         ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
@@ -59,7 +60,7 @@ Module.register('MMM-Withings', {
 
         ctx.beginPath();
         ctx.moveTo(x, y);
-        const secondX = (index + 1) * 30 + offSetXFromEdges;
+        const secondX = (index + 1) * spaceBetweenX + offSetXFromEdges;
         const secondY = canvasHeight - (canvasHeight - offSetYFromEdges) * (allGraphValues[index + 1] - minValue) / (maxValue - minValue) - offSetXFromEdges
         ctx.lineTo(secondX, secondY);
         ctx.stroke();
@@ -69,7 +70,7 @@ Module.register('MMM-Withings', {
       const weightDifference = latestWeight - secondLatestWeight;
       ctx.fillText(
         `${weightDifference > 0 ? '+' : '-'} ${Math.abs(weightDifference).toFixed(1)}`, 
-        graphValues.length * 30, 
+        graphValues.length * spaceBetweenX, 
         canvasHeight / 2
       );
     }
