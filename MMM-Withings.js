@@ -40,10 +40,15 @@ Module.register('MMM-Withings', {
   },
 
   drawGraph: function(canvas, hasWeight) {
-    if (canvas && hasWeight) {
+    if (hasWeight) {
       const ctx = canvas.getContext('2d');
-      ctx.fillStyle = 'red';
-      ctx.fillRect(0, 0, 100, 100);
+      const graphValues = [77.1, 79.4, 81.0, 77.8, 78.1];
+      ctx.fillStyle = '#ffffff';
+      graphValues.forEach((graphValue, index) => {
+        ctx.beginPath();
+        ctx.arc(index * 30, graphValue, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      });
     }
   },
 
@@ -52,7 +57,6 @@ Module.register('MMM-Withings', {
     const upperText = document.createElement('div');
     const lowerText = document.createElement('div');
     const canvas = document.createElement('canvas');
-
     
     upperText.classList.add('small');
     upperText.innerHTML = this.state.weight 
@@ -63,6 +67,7 @@ Module.register('MMM-Withings', {
     canvas.setAttribute('id', 'graph');
     canvas.setAttribute('width', '300');
     canvas.setAttribute('height', '200');
+    canvas.setAttribute('style', 'border: 1px solid #ffffff')
     
     wrapper.appendChild(upperText);
     wrapper.appendChild(lowerText);
