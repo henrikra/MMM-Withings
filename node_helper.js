@@ -89,20 +89,25 @@ module.exports = NodeHelper.create({
   checkLatestWeight: function(config) {
     agent.get(createApiUrl(config), undefined, (error, response, body) => {
       if (error) {
-        return;
+        console.error('Something went wrong with Withings call', error);
+        this.sendSocketNotification('ERROR', 'Something went wrong. Are you connected to Internet?');
+      } else if (body.statusCode === 200) {
+        const weights = body.body.measuregrps.map(measuregrp => {
+          const measure = measuregrp.measures.find(isWeightType);
+          return measure.value * Math.pow(10, measure.unit);
+        });
+  
+        this.sendSocketNotification(
+          'NEW_WEIGHT', 
+          { 
+            date: body.body.measuregrps[0].date,
+            weights,
+          }
+        );
+      } else {
+        console.error('Withings API responded with error', body);
+        this.sendSocketNotification('ERROR', body.error);
       }
-      const weights = body.body.measuregrps.map(measuregrp => {
-        const measure = measuregrp.measures.find(isWeightType);
-        return measure.value * Math.pow(10, measure.unit);
-      });
-
-      this.sendSocketNotification(
-        'NEW_WEIGHT', 
-        { 
-          date: body.body.measuregrps[0].date,
-          weights,
-        }
-      );
     });
   }
 });
