@@ -25,8 +25,16 @@ const measureTypes = {
 };
 
 /**
+ * @typedef {Object} Config
+ * @property {string} apiKey
+ * @property {string} oauthSignature
+ * @property {string} accessToken
+ * @property {string} userId
+ */
+
+/**
  * 
- * @param {object} config 
+ * @param {Config} config 
  */
 const createApiUrl = (config) => {
   const timestamp = Math.round(Date.now() / 1000);
@@ -49,13 +57,27 @@ const createApiUrl = (config) => {
 
 const isWeightType = measure => measure.type === measureTypes.weight;
 
+/**
+ * 
+ * @param {Partial<Config>} config 
+ */
+const isValidConfig = (config) => {
+  const configKeys = Object.keys(config);
+  const requiredKeys = ['apiKey', 'oauthSignature', 'accessToken', 'userId'];
+  return requiredKeys.every(requiredKey => configKeys.includes(requiredKey));
+}
+
 module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'MMM_WITHINGS_START') {
-      this.checkLatestWeight(payload);
-      setInterval(() => {
+      if (isValidConfig(payload)) {
         this.checkLatestWeight(payload);
-      }, 30000);
+        setInterval(() => {
+          this.checkLatestWeight(payload);
+        }, 30000);
+      } else {
+        this.sendSocketNotification('ERROR', 'Check your configuration')
+      }
     }
   },
   

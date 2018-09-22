@@ -27,10 +27,15 @@ Module.register('MMM-Withings', {
   },
 
   socketNotificationReceived: function(notification, payload) {
-    this.setState({
-      date: payload.date,
-      weights: payload.weights,
-    }, 1000);
+    if (notification === 'NEW_WEIGHT') {
+      this.setState({
+        date: payload.date,
+        weights: payload.weights,
+        error: undefined,
+      }, 1000);
+    } else if (notification === 'ERROR') {
+      this.setState({error: payload}, 1000);
+    }
   },
 
   formatWeight: function() {
@@ -81,16 +86,22 @@ Module.register('MMM-Withings', {
     const upperText = document.createElement('div');
     const lowerText = document.createElement('div');
     const canvas = document.createElement('canvas');
-    
+
     upperText.classList.add('small');
-    upperText.innerHTML = this.state.date 
-    ? this.translate('agoYouWere', {agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow())}) 
-    : '';
     lowerText.classList.add('medium');
-    lowerText.innerHTML = this.state.weights ? this.formatWeight() : this.translate('loading');
     canvas.setAttribute('id', 'graph');
     canvas.setAttribute('width', canvasWidth);
     canvas.setAttribute('height', canvasHeight);
+
+    if (this.state.error) {
+      upperText.innerHTML = `Error in ${this.name}`;
+      lowerText.innerHTML = this.state.error;
+    } else {
+      upperText.innerHTML = this.state.date 
+      ? this.translate('agoYouWere', {agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow())}) 
+      : '';
+      lowerText.innerHTML = this.state.weights ? this.formatWeight() : this.translate('loading');
+    }
     
     wrapper.appendChild(upperText);
     wrapper.appendChild(lowerText);
