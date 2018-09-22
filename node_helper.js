@@ -39,9 +39,10 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'MMM_WITHINGS_START') {
       if (payload.accessToken) {
-        this.checkLatestWeight(payload);
+        const apiUrl = createApiUrl(payload);
+        this.checkLatestWeight(apiUrl);
         setInterval(() => {
-          this.checkLatestWeight(payload);
+          this.checkLatestWeight(apiUrl);
         }, 30000);
       } else {
         console.error('Configuration object was invalid. Check README for documentation', payload);
@@ -52,10 +53,10 @@ module.exports = NodeHelper.create({
   
   /**
    * 
-   * @param {Config} config 
+   * @param {string} apiUrl 
    */
-  checkLatestWeight: function(config) {
-    agent.get(createApiUrl(config), undefined, (error, response, body) => {
+  checkLatestWeight: function(apiUrl) {
+    agent.get(apiUrl, undefined, (error, response, body) => {
       if (error) {
         console.error('Something went wrong with Withings call', error);
         this.sendSocketNotification('ERROR', 'Something went wrong. Are you connected to Internet?');
