@@ -76,11 +76,16 @@ module.exports = NodeHelper.create({
           this.checkLatestWeight(payload);
         }, 30000);
       } else {
+        console.error('Configuration object was invalid. Check README for documentation', payload);
         this.sendSocketNotification('ERROR', 'Check your configuration')
       }
     }
   },
   
+  /**
+   * 
+   * @param {Config} config 
+   */
   checkLatestWeight: function(config) {
     agent.get(createApiUrl(config), undefined, (error, response, body) => {
       if (error) {
