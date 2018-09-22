@@ -7,7 +7,7 @@ const canvasHeight = 100;
 Module.register('MMM-Withings', {
   start: function() {
     this.state = {};
-    this.sendSocketNotification('MMM_WITHINGS_START');
+    this.sendSocketNotification('MMM_WITHINGS_START', this.config);
   },
 
   getScripts: function() {
