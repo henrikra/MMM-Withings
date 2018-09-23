@@ -48,7 +48,7 @@ Module.register('MMM-Withings', {
     if (notification === 'NEW_WEIGHT') {
       this.setState(
         {
-          date: payload.date,
+          timeOfLastMeasurement: payload.timeOfLastMeasurement,
           weights: payload.weights,
           error: undefined,
         },
@@ -127,9 +127,9 @@ Module.register('MMM-Withings', {
       upperText.innerHTML = `Error in ${this.name}`;
       lowerText.innerHTML = this.state.error;
     } else {
-      upperText.innerHTML = this.state.date
+      upperText.innerHTML = this.state.timeOfLastMeasurement
         ? this.translate('agoYouWere', {
-            agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow()),
+            agoTime: capitalizeFirst(moment(this.state.timeOfLastMeasurement * 1000).fromNow()),
           })
         : '';
       lowerText.innerHTML = this.state.weights ? this.formatWeight() : this.translate('loading');

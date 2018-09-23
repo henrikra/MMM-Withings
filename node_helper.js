@@ -100,7 +100,7 @@ module.exports = NodeHelper.create({
         });
 
         this.sendSocketNotification('NEW_WEIGHT', {
-          date: body.body.measuregrps[0].date,
+          timeOfLastMeasurement: body.body.measuregrps[0].date,
           weights,
         });
       } else if (body.status === 401) {
