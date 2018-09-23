@@ -6,6 +6,7 @@ const canvasHeight = 100;
 Module.register('MMM-Withings', {
   defaults: {
     fetchInterval: 30000,
+    numberOfDaysInThePast: 14
   },
   
   start() {
@@ -49,7 +50,7 @@ Module.register('MMM-Withings', {
       this.setState(
         {
           timeOfLastMeasurement: payload.timeOfLastMeasurement,
-          weights: payload.weights.slice(0, 7),
+          weights: payload.weights.slice(0, this.config.numberOfDaysInThePast),
           error: undefined,
         },
         1000,
@@ -74,7 +75,7 @@ Module.register('MMM-Withings', {
       const maxValue = Math.max(...graphValues);
       ctx.fillStyle = '#aaaaaa';
       ctx.strokeStyle = '#aaaaaa';
-      const spaceBetweenX = 30;
+      const spaceBetweenX = 210 / this.config.numberOfDaysInThePast;
       graphValues.forEach((graphValue, index, allGraphValues) => {
         const circleRadius = 2;
         const offSetYFromEdges = circleRadius * 3;
