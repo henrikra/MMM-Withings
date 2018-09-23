@@ -6,8 +6,13 @@ const canvasHeight = 100;
 
 Module.register('MMM-Withings', {
   start: function() {
+    // TODO validate this.config before starting the app
+    
     this.state = {};
-    this.sendSocketNotification('MMM_WITHINGS_START', this.config);
+    
+    const storedAuthentication = JSON.parse(localStorage.getItem('MMM_WITHINGS_AUTHENTICATION'));
+
+    this.sendSocketNotification('MMM_WITHINGS_INIT', {config: this.config, storedAuthentication});
   },
 
   getScripts: function() {
@@ -35,6 +40,8 @@ Module.register('MMM-Withings', {
       }, 1000);
     } else if (notification === 'ERROR') {
       this.setState({error: payload}, 1000);
+    } else if (notification === 'ACCESS_TOKEN_SUCCESS') {
+      localStorage.setItem('MMM_WITHINGS_AUTHENTICATION', JSON.stringify(payload));
     }
   },
 

@@ -17,46 +17,71 @@ const measureTypes = {
 
 /**
  * @typedef {Object} Config
- * @property {string} accessToken
+ * @property {string} clientId
+ * @property {string} consumerSecret
+ * @property {string} authorizationCode
+ * @property {string} redirectUri
  */
-
-/**
- * 
- * @param {Config} config 
- */
-const createApiUrl = (config) => {
-  const queryParams = generateQuery({
-    action: 'getmeas',
-    access_token: config.accessToken,
-    meastype: measureTypes.weight,
-  });
-  return `https://wbsapi.withings.net/measure?${queryParams}`;
-}
 
 const isWeightType = measure => measure.type === measureTypes.weight;
 
 module.exports = NodeHelper.create({
+  start: function() {
+    this.currentConfig = undefined;
+    this.currentAuthentication = undefined;
+  },
+
   socketNotificationReceived: function(notification, payload) {
-    if (notification === 'MMM_WITHINGS_START') {
-      if (payload.accessToken) {
-        const apiUrl = createApiUrl(payload);
-        this.checkLatestWeight(apiUrl);
-        setInterval(() => {
-          this.checkLatestWeight(apiUrl);
-        }, 30000);
+    if (notification === 'MMM_WITHINGS_INIT') {
+      this.currentConfig = payload.config;
+      this.currentAuthentication = payload.storedAuthentication;
+
+      if (this.currentAuthentication) {
+        this.startPolling();
       } else {
-        console.error('Configuration object was invalid. Check README for documentation', payload);
-        this.sendSocketNotification('ERROR', 'Check your configuration')
+        agent.post('https://account.withings.com/oauth2/token', {form: {
+          grant_type: 'authorization_code',
+          client_id: this.currentConfig.clientId,
+          client_secret: this.currentConfig.consumerSecret,
+          code: this.currentConfig.authorizationCode,
+          redirect_uri: this.currentConfig.redirectUri,
+        }}, (error, response, body) => {
+          if (error) {
+            console.error('authorization_code failed', error);
+            this.sendSocketNotification('ERROR', 'Authorization failed, check the logs');
+            return;
+          }
+          if (response.statusCode === 200) {
+            this.currentAuthentication = body;
+            this.sendSocketNotification('ACCESS_TOKEN_SUCCESS', body);
+            this.startPolling();
+          } else {
+            console.error(`authorization_code failed with ${response.statusCode}`, body);
+            this.sendSocketNotification('ERROR', body.errors[0].message);
+          }
+        })
       }
     }
   },
+
+  startPolling: function() {
+    this.checkLatestWeight();
+    setInterval(() => {
+      this.checkLatestWeight();
+    }, 3000);
+  },
+
+  createMeasureEndpoint: function() {
+    const queryParams = generateQuery({
+      action: 'getmeas',
+      access_token: this.currentAuthentication.access_token,
+      meastype: measureTypes.weight,
+    });
+    return `https://wbsapi.withings.net/measure?${queryParams}`;
+  },
   
-  /**
-   * 
-   * @param {string} apiUrl 
-   */
-  checkLatestWeight: function(apiUrl) {
-    agent.get(apiUrl, undefined, (error, response, body) => {
+  checkLatestWeight: function() {
+    agent.get(this.createMeasureEndpoint(), undefined, (error, response, body) => {
       if (error) {
         console.error('Something went wrong with Withings call', error);
         this.sendSocketNotification('ERROR', 'Something went wrong. Are you connected to Internet?');
@@ -73,6 +98,26 @@ module.exports = NodeHelper.create({
             weights,
           }
         );
+      } else if (body.status === 401) {
+        agent.post('https://account.withings.com/oauth2/token', {form: {
+          grant_type: 'refresh_token',
+          client_id: this.currentConfig.clientId,
+          client_secret: this.currentConfig.consumerSecret,
+          refresh_token: this.currentAuthentication.refresh_token,
+        }}, (error, response, body) => {
+          if (error) {
+            console.error('refresh_token failed', error);
+            this.sendSocketNotification('ERROR', 'Refresh token failed, check the logs');
+            return;
+          }
+          if (response.statusCode === 200) {
+            this.currentAuthentication = body;
+            this.sendSocketNotification('ACCESS_TOKEN_SUCCESS', body);
+          } else {
+            console.error(`refresh_token failed with ${response.statusCode}`, body);
+            this.sendSocketNotification('ERROR', body.error);
+          }
+        })
       } else {
         console.error('Withings API responded with error', body);
         this.sendSocketNotification('ERROR', body.error);
