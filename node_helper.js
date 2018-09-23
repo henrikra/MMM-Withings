@@ -53,9 +53,7 @@ module.exports = NodeHelper.create({
             if (error) {
               console.error('authorization_code failed', error);
               this.sendSocketNotification('ERROR', 'Authorization failed, check the logs');
-              return;
-            }
-            if (response.statusCode === 200) {
+            } else if (response.statusCode === 200) {
               this.currentAuthentication = body;
               this.sendSocketNotification('ACCESS_TOKEN_SUCCESS', body);
               this.startPolling();
@@ -118,9 +116,7 @@ module.exports = NodeHelper.create({
             if (error) {
               console.error('refresh_token failed', error);
               this.sendSocketNotification('ERROR', 'Refresh token failed, check the logs');
-              return;
-            }
-            if (response.statusCode === 200) {
+            } else if (response.statusCode === 200) {
               this.currentAuthentication = body;
               this.sendSocketNotification('ACCESS_TOKEN_SUCCESS', body);
             } else {
