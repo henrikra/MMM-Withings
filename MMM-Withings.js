@@ -49,7 +49,7 @@ Module.register('MMM-Withings', {
       this.setState(
         {
           timeOfLastMeasurement: payload.timeOfLastMeasurement,
-          weights: payload.weights,
+          weights: payload.weights.slice(0, 7),
           error: undefined,
         },
         1000,
