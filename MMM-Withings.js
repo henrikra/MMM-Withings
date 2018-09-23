@@ -5,7 +5,7 @@ const canvasWidth = 300;
 const canvasHeight = 100;
 
 Module.register('MMM-Withings', {
-  start: function() {
+  start() {
     if (
       !this.config.clientId ||
       !this.config.consumerSecret ||
@@ -25,23 +25,23 @@ Module.register('MMM-Withings', {
     }
   },
 
-  getScripts: function() {
+  getScripts() {
     return ['moment.js'];
   },
 
-  getTranslations: function() {
+  getTranslations() {
     return {
       en: 'translations/en.json',
       fi: 'translations/fi.json',
     };
   },
 
-  setState: function(newData, animationSpeed) {
+  setState(newData, animationSpeed) {
     this.state = Object.assign({}, this.state, newData);
     this.updateDom(animationSpeed);
   },
 
-  socketNotificationReceived: function(notification, payload) {
+  socketNotificationReceived(notification, payload) {
     if (notification === 'NEW_WEIGHT') {
       this.setState(
         {
@@ -58,12 +58,12 @@ Module.register('MMM-Withings', {
     }
   },
 
-  formatWeight: function() {
+  formatWeight() {
     const [latestWeight] = this.state.weights;
     return `${latestWeight.toFixed(1)} kg`;
   },
 
-  drawGraph: function(canvas) {
+  drawGraph(canvas) {
     if (this.state.weights) {
       const ctx = canvas.getContext('2d');
       const graphValues = [...this.state.weights].reverse();
@@ -108,7 +108,7 @@ Module.register('MMM-Withings', {
     }
   },
 
-  getDom: function() {
+  getDom() {
     const wrapper = document.createElement('div');
     const upperText = document.createElement('div');
     const lowerText = document.createElement('div');

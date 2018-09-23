@@ -26,12 +26,12 @@ const measureTypes = {
 const isWeightType = measure => measure.type === measureTypes.weight;
 
 module.exports = NodeHelper.create({
-  start: function() {
+  start() {
     this.currentConfig = undefined;
     this.currentAuthentication = undefined;
   },
 
-  socketNotificationReceived: function(notification, payload) {
+  socketNotificationReceived(notification, payload) {
     if (notification === 'MMM_WITHINGS_INIT') {
       this.currentConfig = payload.config;
       this.currentAuthentication = payload.storedAuthentication;
@@ -70,14 +70,14 @@ module.exports = NodeHelper.create({
     }
   },
 
-  startPolling: function() {
+  startPolling() {
     this.checkLatestWeight();
     setInterval(() => {
       this.checkLatestWeight();
     }, 3000);
   },
 
-  createMeasureEndpoint: function() {
+  createMeasureEndpoint() {
     const queryParams = generateQuery({
       action: 'getmeas',
       access_token: this.currentAuthentication.access_token,
@@ -86,7 +86,7 @@ module.exports = NodeHelper.create({
     return `https://wbsapi.withings.net/measure?${queryParams}`;
   },
 
-  checkLatestWeight: function() {
+  checkLatestWeight() {
     agent.get(this.createMeasureEndpoint(), undefined, (error, response, body) => {
       if (error) {
         console.error('Something went wrong with Withings call', error);
