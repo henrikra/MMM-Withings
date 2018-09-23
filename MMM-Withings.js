@@ -1,18 +1,28 @@
 /* eslint-disable */
-const capitalizeFirst = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+const capitalizeFirst = string => string.charAt(0).toUpperCase() + string.slice(1);
 
 const canvasWidth = 300;
 const canvasHeight = 100;
 
 Module.register('MMM-Withings', {
   start: function() {
-    // TODO validate this.config before starting the app
-    
-    this.state = {};
-    
-    const storedAuthentication = JSON.parse(localStorage.getItem('MMM_WITHINGS_AUTHENTICATION'));
+    if (
+      !this.config.clientId ||
+      !this.config.consumerSecret ||
+      !this.config.authorizationCode ||
+      !this.config.redirectUri
+    ) {
+      this.setState({ error: 'Config object invalid. Check the documentation' });
+    } else {
+      this.state = {};
 
-    this.sendSocketNotification('MMM_WITHINGS_INIT', {config: this.config, storedAuthentication});
+      const storedAuthentication = JSON.parse(localStorage.getItem('MMM_WITHINGS_AUTHENTICATION'));
+
+      this.sendSocketNotification('MMM_WITHINGS_INIT', {
+        config: this.config,
+        storedAuthentication,
+      });
+    }
   },
 
   getScripts: function() {
@@ -23,7 +33,7 @@ Module.register('MMM-Withings', {
     return {
       en: 'translations/en.json',
       fi: 'translations/fi.json',
-    }
+    };
   },
 
   setState: function(newData, animationSpeed) {
@@ -33,13 +43,16 @@ Module.register('MMM-Withings', {
 
   socketNotificationReceived: function(notification, payload) {
     if (notification === 'NEW_WEIGHT') {
-      this.setState({
-        date: payload.date,
-        weights: payload.weights,
-        error: undefined,
-      }, 1000);
+      this.setState(
+        {
+          date: payload.date,
+          weights: payload.weights,
+          error: undefined,
+        },
+        1000,
+      );
     } else if (notification === 'ERROR') {
-      this.setState({error: payload}, 1000);
+      this.setState({ error: payload }, 1000);
     } else if (notification === 'ACCESS_TOKEN_SUCCESS') {
       localStorage.setItem('MMM_WITHINGS_AUTHENTICATION', JSON.stringify(payload));
     }
@@ -63,9 +76,12 @@ Module.register('MMM-Withings', {
         const circleRadius = 2;
         const offSetYFromEdges = circleRadius * 3;
         const offSetXFromEdges = offSetYFromEdges / 2;
-        
+
         const x = index * spaceBetweenX + offSetXFromEdges;
-        const y = canvasHeight - (canvasHeight - offSetYFromEdges) * (graphValue - minValue) / (maxValue - minValue) - offSetXFromEdges
+        const y =
+          canvasHeight -
+          ((canvasHeight - offSetYFromEdges) * (graphValue - minValue)) / (maxValue - minValue) -
+          offSetXFromEdges;
         ctx.beginPath();
         ctx.arc(x, y, circleRadius, 0, 2 * Math.PI);
         ctx.fill();
@@ -73,7 +89,11 @@ Module.register('MMM-Withings', {
         ctx.beginPath();
         ctx.moveTo(x, y);
         const secondX = (index + 1) * spaceBetweenX + offSetXFromEdges;
-        const secondY = canvasHeight - (canvasHeight - offSetYFromEdges) * (allGraphValues[index + 1] - minValue) / (maxValue - minValue) - offSetXFromEdges
+        const secondY =
+          canvasHeight -
+          ((canvasHeight - offSetYFromEdges) * (allGraphValues[index + 1] - minValue)) /
+            (maxValue - minValue) -
+          offSetXFromEdges;
         ctx.lineTo(secondX, secondY);
         ctx.stroke();
       });
@@ -81,9 +101,9 @@ Module.register('MMM-Withings', {
       const [latestWeight, secondLatestWeight] = this.state.weights;
       const weightDifference = latestWeight - secondLatestWeight;
       ctx.fillText(
-        `${weightDifference > 0 ? '+' : '-'} ${Math.abs(weightDifference).toFixed(1)}`, 
-        graphValues.length * spaceBetweenX, 
-        canvasHeight / 2
+        `${weightDifference > 0 ? '+' : '-'} ${Math.abs(weightDifference).toFixed(1)}`,
+        graphValues.length * spaceBetweenX,
+        canvasHeight / 2,
       );
     }
   },
@@ -104,18 +124,20 @@ Module.register('MMM-Withings', {
       upperText.innerHTML = `Error in ${this.name}`;
       lowerText.innerHTML = this.state.error;
     } else {
-      upperText.innerHTML = this.state.date 
-      ? this.translate('agoYouWere', {agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow())}) 
-      : '';
+      upperText.innerHTML = this.state.date
+        ? this.translate('agoYouWere', {
+            agoTime: capitalizeFirst(moment(this.state.date * 1000).fromNow()),
+          })
+        : '';
       lowerText.innerHTML = this.state.weights ? this.formatWeight() : this.translate('loading');
     }
-    
+
     wrapper.appendChild(upperText);
     wrapper.appendChild(lowerText);
     wrapper.appendChild(canvas);
-    
+
     this.drawGraph(canvas);
-    
+
     return wrapper;
-  }
+  },
 });
