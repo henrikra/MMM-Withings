@@ -1,10 +1,13 @@
-/* eslint-disable */
 const capitalizeFirst = string => string.charAt(0).toUpperCase() + string.slice(1);
 
 const canvasWidth = 300;
 const canvasHeight = 100;
 
 Module.register('MMM-Withings', {
+  defaults: {
+    fetchInterval: 30000,
+  },
+  
   start() {
     if (
       !this.config.clientId ||

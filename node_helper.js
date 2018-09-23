@@ -1,6 +1,5 @@
 // @ts-check
 
-/* eslint-disable */
 const NodeHelper = require('node_helper');
 const request = require('request');
 
@@ -71,10 +70,10 @@ module.exports = NodeHelper.create({
   },
 
   startPolling() {
-    this.checkLatestWeight();
+    this.fetchWeight();
     setInterval(() => {
-      this.checkLatestWeight();
-    }, 3000);
+      this.fetchWeight();
+    }, this.currentConfig.fetchInterval);
   },
 
   createMeasureEndpoint() {
@@ -86,7 +85,7 @@ module.exports = NodeHelper.create({
     return `https://wbsapi.withings.net/measure?${queryParams}`;
   },
 
-  checkLatestWeight() {
+  fetchWeight() {
     agent.get(this.createMeasureEndpoint(), undefined, (error, response, body) => {
       if (error) {
         console.error('Something went wrong with Withings call', error);
