@@ -56,6 +56,7 @@ Module.register('MMM-Withings', {
         1000,
       );
     } else if (notification === 'ERROR') {
+      localStorage.removeItem('MMM_WITHINGS_AUTHENTICATION');
       this.setState({ error: payload }, 1000);
     } else if (notification === 'ACCESS_TOKEN_SUCCESS') {
       localStorage.setItem('MMM_WITHINGS_AUTHENTICATION', JSON.stringify(payload));
